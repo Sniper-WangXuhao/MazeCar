@@ -35,7 +35,7 @@ void forwardToWall(float dis);
 
 int main(void) {
    
-    //上传测试123123
+    //上传测试
     if (wiringPiSetup() == -1) { //when initialize wiring failed,print messageto screen  
         printf("setup wiringPi failed !");
         return 1;
@@ -83,7 +83,6 @@ int main(void) {
             break;
         }
     }
-
 
 
     return 0;

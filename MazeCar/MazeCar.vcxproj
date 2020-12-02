@@ -65,7 +65,6 @@
     </RemotePostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Basic_movement.c" />
     <ClCompile Include="LOBOROBOT.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

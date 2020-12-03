@@ -31,7 +31,7 @@ void* disMeasureRight(void*);
 void* disMeasureLeft(void*);
 
 void forwardToWall(float dis);
-
+void backwardToWall(float dis);
 
 int main(void) {
    
@@ -73,7 +73,7 @@ int main(void) {
             break;
         }
     }
-    
+   
     //second cornor
     forwardToWall(12);
     delay(100);
@@ -83,8 +83,59 @@ int main(void) {
             break;
         }
     }
+    
+    //third corner
+    backwardToWall(12);
+    delay(100);
+    while (1) {
+        if (dis_Right > 20) {
+            moveRight(100, 1000);
+            break;
+        }
+    }
+
+    //forth corner
+    forwardToWall(12);
+    delay(100);
+    while (1) {
+        if (dis_Right > 20) {
+            moveRight(100, 1000);
+            break;
+        }
+    }
+
+    //fifth corner
+    backwardToWall(12);
+    delay(100);
+    while (1) {
+        if (dis_Right > 20) {
+            moveRight(100, 1000);
+            break;
+        }
+    }
+
+    //sixth corner
+    forwardToWall(12);
+    delay(100);
+    while (1) {
+        if (dis_Right > 20) {
+            moveRight(100, 1000);
+            break;
+        }
+    }
+
+    //seventh corner
+    backwardToWall(12);
+    delay(100);
+    while (1) {
+        if (dis_Right > 20) {
+            moveRight(100, 2000);
+            break;
+        }
+    }
 
 
+   
     return 0;
 }
 
@@ -229,6 +280,7 @@ void* disMeasureLeft(void*) {
         delay(100);
     }
 }
+
 //前进到墙
 //param dis 到墙边距离
 void forwardToWall(float dis) {
@@ -237,13 +289,33 @@ void forwardToWall(float dis) {
         pthread_mutex_trylock(&mute_Front);
         if (dis_Front < 1190) {
             if (dis_Front > dis) {
-                up(100);
+                up(150);
             }
             else {
                 stop();
                 return;
             }
                 
+        }
+        pthread_mutex_unlock(&mute_Front);
+    }
+}
+
+//后退到墙
+//parm dis 到墙边距离
+void backwardToWall(float dis) {
+
+    while (1) {
+        pthread_mutex_trylock(&mute_Back);
+        if (dis_Front < 1190) {
+            if (dis_Back > dis) {
+                down(150);
+            }
+            else {
+                stop();
+                return;
+            }
+
         }
         pthread_mutex_unlock(&mute_Front);
     }

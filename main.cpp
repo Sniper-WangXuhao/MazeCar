@@ -79,7 +79,7 @@ int main(void) {
     delay(100);
     while (1) {
         if (dis_Right > 20) {
-            moveRight(100, 1000);
+            moveRight(100, 1400);
             break;
         }
     }
@@ -89,7 +89,7 @@ int main(void) {
     delay(100);
     while (1) {
         if (dis_Right > 20) {
-            moveRight(100, 1000);
+            moveRight(100, 1400);
             break;
         }
     }
@@ -99,7 +99,7 @@ int main(void) {
     delay(100);
     while (1) {
         if (dis_Right > 20) {
-            moveRight(100, 1000);
+            moveRight(100, 1400);
             break;
         }
     }
@@ -109,7 +109,7 @@ int main(void) {
     delay(100);
     while (1) {
         if (dis_Right > 20) {
-            moveRight(100, 1000);
+            moveRight(100, 1400);
             break;
         }
     }
@@ -119,7 +119,7 @@ int main(void) {
     delay(100);
     while (1) {
         if (dis_Right > 20) {
-            moveRight(100, 1000);
+            moveRight(100, 1400);
             break;
         }
     }
@@ -145,8 +145,8 @@ void ultraInit(void) {
     pinMode(Trig_Front, OUTPUT);
     pinMode(Echo_Back, INPUT);
     pinMode(Trig_Back, OUTPUT);
-    //pinMode(Echo_Left, INPUT);
-    //pinMode(Trig_Left, OUTPUT);
+    // pinMode(Echo_Left, INPUT);
+    // pinMode(Trig_Left, OUTPUT);
     pinMode(Echo_Right, INPUT);
     pinMode(Trig_Right, OUTPUT);
 }
@@ -289,7 +289,7 @@ void forwardToWall(float dis) {
         pthread_mutex_trylock(&mute_Front);
         if (dis_Front < 1190) {
             if (dis_Front > dis) {
-                up(150);
+                up(100);
             }
             else {
                 stop();
@@ -309,7 +309,7 @@ void backwardToWall(float dis) {
         pthread_mutex_trylock(&mute_Back);
         if (dis_Front < 1190) {
             if (dis_Back > dis) {
-                down(150);
+                down(100);
             }
             else {
                 stop();

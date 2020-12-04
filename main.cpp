@@ -79,7 +79,7 @@ int main(void) {
     delay(100);
     while (1) {
         if (dis_Right > 20) {
-            moveRight(100, 1000);
+            moveRight(100, 1400);
             break;
         }
     }
@@ -89,7 +89,7 @@ int main(void) {
     delay(100);
     while (1) {
         if (dis_Right > 20) {
-            moveRight(100, 1000);
+            moveRight(100, 1400);
             break;
         }
     }
@@ -99,7 +99,7 @@ int main(void) {
     delay(100);
     while (1) {
         if (dis_Right > 20) {
-            moveRight(100, 1000);
+            moveRight(100, 1400);
             break;
         }
     }
@@ -109,7 +109,7 @@ int main(void) {
     delay(100);
     while (1) {
         if (dis_Right > 20) {
-            moveRight(100, 1000);
+            moveRight(100, 1400);
             break;
         }
     }
@@ -119,7 +119,7 @@ int main(void) {
     delay(100);
     while (1) {
         if (dis_Right > 20) {
-            moveRight(100, 1000);
+            moveRight(100, 1400);
             break;
         }
     }
@@ -289,7 +289,7 @@ void forwardToWall(float dis) {
         pthread_mutex_trylock(&mute_Front);
         if (dis_Front < 1190) {
             if (dis_Front > dis) {
-                up(150);
+                up(100);
             }
             else {
                 stop();
@@ -307,9 +307,9 @@ void backwardToWall(float dis) {
 
     while (1) {
         pthread_mutex_trylock(&mute_Back);
-        if (dis_Front < 1190) {
+        if (dis_Back < 1190) {
             if (dis_Back > dis) {
-                down(150);
+                down(100);
             }
             else {
                 stop();
@@ -317,6 +317,6 @@ void backwardToWall(float dis) {
             }
 
         }
-        pthread_mutex_unlock(&mute_Front);
+        pthread_mutex_unlock(&mute_Back);
     }
 }

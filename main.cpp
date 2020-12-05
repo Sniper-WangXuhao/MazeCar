@@ -24,12 +24,28 @@ float dis_Back;
 float dis_Right;
 float dis_Left;
 
+/*******************舵机定义*************************
+*****************************************************/
+int myservo1 = 15; //舵机0 手爪
+int myservo2 = 14; //舵机1 上臂
+int myservo3 = 13; //舵机2 下臂
+int myservo4 = 12; //舵机3 底座
+
+float currentAngle[4];
+float s_MIN[4];
+float s_MAX[4];
+float INITANGLE[4];
+
+void armCtrl1(void);
+
+//传感器线程
 void ultraInit(void);
 void* disMeasureFront(void*);
 void* disMeasureBack(void*);
 void* disMeasureRight(void*);
 void* disMeasureLeft(void*);
 
+//行动
 void forwardToWall(float dis);
 void backwardToWall(float dis);
 
@@ -41,11 +57,14 @@ int main(void) {
         return 1;
     }
 
+    //按钮启动
     while (0 == digitalRead(BTN));
 
     ultraInit();
     Motor_Init();
 
+
+    //multitask
     pthread_t pidUltraFront;
     pthread_t pidUltraBack;
     pthread_t pidUltraRight;
@@ -63,6 +82,11 @@ int main(void) {
 
 
     delay(100);
+    //handtest
+    while (1) {
+        
+        
+    }
 
     //first cornor
     forwardToWall(12);
@@ -145,8 +169,8 @@ void ultraInit(void) {
     pinMode(Trig_Front, OUTPUT);
     pinMode(Echo_Back, INPUT);
     pinMode(Trig_Back, OUTPUT);
-    //pinMode(Echo_Left, INPUT);
-    //pinMode(Trig_Left, OUTPUT);
+    pinMode(Echo_Left, INPUT);
+    pinMode(Trig_Left, OUTPUT);
     pinMode(Echo_Right, INPUT);
     pinMode(Trig_Right, OUTPUT);
 }
@@ -319,4 +343,37 @@ void backwardToWall(float dis) {
         }
         pthread_mutex_unlock(&mute_Back);
     }
+}
+
+void armCtrl1(){
+    set_servo_angle(myservo3, 25); //下臂舵机
+    set_servo_angle(myservo2, 70); //上臂舵机
+    delay(200);
+    set_servo_angle(myservo4, 0); //底座舵机
+    set_servo_angle(myservo1, 25); //手爪舵机
+    delay(1000);
+
+    set_servo_angle(myservo3, 52); //下臂舵机
+    delay(1000);
+
+    set_servo_angle(myservo1, 15); //手爪舵机
+    delay(1000);
+
+    set_servo_angle(myservo2, 75); //上臂舵机
+    delay(1000);
+
+    set_servo_angle(myservo3, 35); //下臂舵机
+    delay(1000);
+
+    set_servo_angle(myservo2, 100); //上臂舵机
+    delay(1000);
+
+    set_servo_angle(myservo4, 94); //底座舵机
+    delay(1000);
+
+    set_servo_angle(myservo3, 110); //下臂舵机
+    delay(1000);
+
+    set_servo_angle(myservo1, 25); //手爪舵机
+    delay(1000);
 }

@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <time.h>
+#include <softPwm.h>
 int fd;
 
 UBYTE DEV_ModuleInit(void)

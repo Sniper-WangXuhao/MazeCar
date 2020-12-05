@@ -82,11 +82,7 @@ int main(void) {
 
 
     delay(100);
-    //handtest
-    while (1) {
-        
-        
-    }
+   
 
     //first cornor
     forwardToWall(12);

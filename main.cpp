@@ -1,6 +1,7 @@
 ﻿#include <wiringPi.h>  
 #include <pthread.h>
 #include <stdio.h>  
+#include<iostream>
 #include <sys/time.h>  
 #include "LOBOROBOT.h"
 
@@ -18,6 +19,7 @@ pthread_mutex_t mute_Front;
 pthread_mutex_t mute_Back;
 pthread_mutex_t mute_Right;
 pthread_mutex_t mute_Left;
+pthread_mutex_t mute_Hand;
 
 float dis_Front;
 float dis_Back;
@@ -36,7 +38,8 @@ float s_MIN[4];
 float s_MAX[4];
 float INITANGLE[4];
 
-void armCtrl1(void);
+void* armCtrl1(void*);
+void* fakeOpencv(void*);
 
 //传感器线程
 void ultraInit(void);
@@ -49,8 +52,13 @@ void* disMeasureLeft(void*);
 void forwardToWall(float dis);
 void backwardToWall(float dis);
 
+using namespace std;
 int main(void) {
-   
+    pthread_mutex_init(&mute_Back, NULL);
+    pthread_mutex_init(&mute_Left, NULL);
+    pthread_mutex_init(&mute_Front, NULL);
+    pthread_mutex_init(&mute_Right, NULL);
+    pthread_mutex_init(&mute_Hand, NULL);
     //上传测试
     if (wiringPiSetup() == -1) { //when initialize wiring failed,print messageto screen  
         printf("setup wiringPi failed !");
@@ -69,6 +77,9 @@ int main(void) {
     pthread_t pidUltraBack;
     pthread_t pidUltraRight;
     pthread_t pidUltraLeft;
+    pthread_t pidHand;
+    pthread_t pidOpencv;
+    
     pthread_create(&pidUltraFront, NULL, disMeasureFront, NULL);
     pthread_create(&pidUltraBack, NULL, disMeasureBack, NULL);
     pthread_create(&pidUltraRight, NULL, disMeasureRight, NULL);
@@ -79,83 +90,138 @@ int main(void) {
         delay(500);
     }*/
 
-
-
-    delay(100);
-   
-
-    //first cornor
-    forwardToWall(12);
-    delay(100);
-    while (1) {
-        if (dis_Right > 20) {
-            turnRight(100, 500);
-            break;
-        }
-    }
-   
-    //second cornor
-    forwardToWall(12);
-    delay(100);
-    while (1) {
-        if (dis_Right > 20) {
-            moveRight(100, 1400);
-            break;
-        }
-    }
+    //set_servo_angle(myservo3, 25); //下臂舵机
+    //set_servo_angle(myservo2, 70); //上臂舵机
+    //set_servo_angle(myservo4, 0); //底座舵机
+    //set_servo_angle(myservo1, 25); //手爪舵机
+    //cout << "1 base 2 lhand 3hhand 4 hand\n";
+    //while (1) {
+    //    int temp;
+    //    int n;
+    //    int myservo;
+    //    cin >> temp>>n;
+    //    switch (temp) {
+    //    case 1:myservo = myservo4;
+    //        break;
+    //    case 2:myservo = myservo3;
+    //        break;
+    //    case 3:myservo = myservo2;
+    //        break;
+    //    case 4:myservo = myservo1;
+    //        break;
+    //    default:
+    //        break;
+    //    }
+    //    set_servo_angle(myservo, n);
+    // 
+    //}
+    //pthread_mutex_init(&mute_Hand,NULL);
     
-    //third corner
-    backwardToWall(12);
     delay(100);
-    while (1) {
-        if (dis_Right > 20) {
-            moveRight(100, 1400);
-            break;
-        }
-    }
+    pthread_create(&pidOpencv, NULL, fakeOpencv, NULL);
+    
+    pthread_create(&pidHand, NULL, armCtrl1, NULL);
 
-    //forth corner
-    forwardToWall(12);
-    delay(100);
-    while (1) {
-        if (dis_Right > 20) {
-            moveRight(100, 1400);
-            break;
-        }
-    }
+    //while (1) {
+    //    set_servo_angle(myservo3, 25); //下臂舵机
+    //    set_servo_angle(myservo2, 75); //上臂舵机
+    //    delay(200);
+    //    set_servo_angle(myservo4, 50); //底座舵机
+    //    set_servo_angle(myservo1, 25); //手爪舵机
+    //    delay(1000);
 
-    //fifth corner
-    backwardToWall(12);
-    delay(100);
-    while (1) {
-        if (dis_Right > 20) {
-            moveRight(100, 1400);
-            break;
-        }
-    }
+    //    set_servo_angle(myservo3, 55); //下臂舵机
+    //    delay(500);
 
-    //sixth corner
-    forwardToWall(12);
-    delay(100);
-    while (1) {
-        if (dis_Right > 20) {
-            moveRight(100, 1400);
-            break;
-        }
-    }
+    //    set_servo_angle(myservo1, 16); //手爪舵机
+    //    delay(500);
 
-    //seventh corner
-    backwardToWall(12);
-    delay(100);
-    while (1) {
-        if (dis_Right > 20) {
-            moveRight(100, 2000);
-            break;
-        }
-    }
+    //    set_servo_angle(myservo2, 90); //上臂舵机
+    //    delay(500);
 
+    //    set_servo_angle(myservo4, 110); //底座舵机
+    //    delay(500);
 
+    //    set_servo_angle(myservo3, 100); //下臂舵机
+    //    delay(2000);
+
+    //    set_servo_angle(myservo1, 25); //手爪舵机
+    //    delay(1000);
+    //}
+    
+
+    ////first cornor
+    //forwardToWall(12);
+    //delay(100);
+    //while (1) {
+    //    if (dis_Right > 20) {
+    //        turnRight(100, 500);
+    //        break;
+    //    }
+    //}
    
+    ////second cornor
+    //forwardToWall(12);
+    //delay(100);
+    //while (1) {
+    //    if (dis_Right > 20) {
+    //        moveRight(100, 1400);
+    //        break;
+    //    }
+    //}
+    //
+    ////third corner
+    //backwardToWall(12);
+    //delay(100);
+    //while (1) {
+    //    if (dis_Right > 20) {
+    //        moveRight(100, 1400);
+    //        break;
+    //    }
+    //}
+
+    ////forth corner
+    //forwardToWall(12);
+    //delay(100);
+    //while (1) {
+    //    if (dis_Right > 20) {
+    //        moveRight(100, 1400);
+    //        break;
+    //    }
+    //}
+
+    ////fifth corner
+    //backwardToWall(12);
+    //delay(100);
+    //while (1) {
+    //    if (dis_Right > 20) {
+    //        moveRight(100, 1400);
+    //        break;
+    //    }
+    //}
+
+    ////sixth corner
+    //forwardToWall(12);
+    //delay(100);
+    //while (1) {
+    //    if (dis_Right > 20) {
+    //        moveRight(100, 1400);
+    //        break;
+    //    }
+    //}
+
+    ////seventh corner
+    //backwardToWall(12);
+    //delay(100);
+    //while (1) {
+    //    if (dis_Right > 20) {
+    //        moveRight(100, 2000);
+    //        break;
+    //    }
+    //}
+
+
+while (1);
     return 0;
 }
 
@@ -197,7 +263,7 @@ void* disMeasureFront(void*) {
         start = tv1.tv_sec * 1000000 + tv1.tv_usec;   //微秒级的时间  
         stop = tv2.tv_sec * 1000000 + tv2.tv_usec;
 
-        pthread_mutex_trylock(&mute_Front);
+        pthread_mutex_lock(&mute_Front);
         dis_Front = (float)(stop - start) / 1000000 * 34000 / 2;  //求出距离  
         pthread_mutex_unlock(&mute_Front);
 
@@ -230,7 +296,7 @@ void* disMeasureBack(void*) {
         start = tv1.tv_sec * 1000000 + tv1.tv_usec;   //微秒级的时间  
         stop = tv2.tv_sec * 1000000 + tv2.tv_usec;
 
-        pthread_mutex_trylock(&mute_Back);
+        pthread_mutex_lock(&mute_Back);
         dis_Back = (float)(stop - start) / 1000000 * 34000 / 2;  //求出距离  
         pthread_mutex_unlock(&mute_Back);
 
@@ -263,7 +329,7 @@ void* disMeasureRight(void*) {
 
         start = tv1.tv_sec * 1000000 + tv1.tv_usec;   //微秒级的时间  
         stop = tv2.tv_sec * 1000000 + tv2.tv_usec;
-        pthread_mutex_trylock(&mute_Right);
+        pthread_mutex_lock(&mute_Right);
         dis_Right = (float)(stop - start) / 1000000 * 34000 / 2;  //求出距离  
         pthread_mutex_unlock(&mute_Right);
         delay(100);
@@ -294,7 +360,7 @@ void* disMeasureLeft(void*) {
 
         start = tv1.tv_sec * 1000000 + tv1.tv_usec;   //微秒级的时间  
         stop = tv2.tv_sec * 1000000 + tv2.tv_usec;
-        pthread_mutex_trylock(&mute_Left);
+        pthread_mutex_lock(&mute_Left);
         dis_Left = (float)(stop - start) / 1000000 * 34000 / 2;  //求出距离  
         pthread_mutex_unlock(&mute_Left);
         delay(100);
@@ -306,7 +372,7 @@ void* disMeasureLeft(void*) {
 void forwardToWall(float dis) {
 
     while (1) {
-        pthread_mutex_trylock(&mute_Front);
+        pthread_mutex_lock(&mute_Front);
         if (dis_Front < 1190) {
             if (dis_Front > dis) {
                 up(100);
@@ -326,7 +392,7 @@ void forwardToWall(float dis) {
 void backwardToWall(float dis) {
 
     while (1) {
-        pthread_mutex_trylock(&mute_Back);
+        pthread_mutex_lock(&mute_Back);
         if (dis_Back < 1190) {
             if (dis_Back > dis) {
                 down(100);
@@ -338,38 +404,47 @@ void backwardToWall(float dis) {
 
         }
         pthread_mutex_unlock(&mute_Back);
+        delay(100);
     }
 }
 
-void armCtrl1(){
-    set_servo_angle(myservo3, 25); //下臂舵机
-    set_servo_angle(myservo2, 70); //上臂舵机
-    delay(200);
-    set_servo_angle(myservo4, 0); //底座舵机
-    set_servo_angle(myservo1, 25); //手爪舵机
-    delay(1000);
+void* armCtrl1(void *){
+    while (1) {
+        set_servo_angle(myservo3, 25); //下臂舵机
+        set_servo_angle(myservo2, 75); //上臂舵机
+        delay(200);
+        set_servo_angle(myservo4, 50); //底座舵机
+        set_servo_angle(myservo1, 25); //手爪舵机
+        delay(1000);
 
-    set_servo_angle(myservo3, 52); //下臂舵机
-    delay(1000);
+        set_servo_angle(myservo3, 55); //下臂舵机
+        delay(500);
 
-    set_servo_angle(myservo1, 15); //手爪舵机
-    delay(1000);
+        set_servo_angle(myservo1, 16); //手爪舵机
+        delay(500);
 
-    set_servo_angle(myservo2, 75); //上臂舵机
-    delay(1000);
+        set_servo_angle(myservo2, 90); //上臂舵机
+        delay(500);
 
-    set_servo_angle(myservo3, 35); //下臂舵机
-    delay(1000);
+        set_servo_angle(myservo4, 110); //底座舵机
+        delay(500);
 
-    set_servo_angle(myservo2, 100); //上臂舵机
-    delay(1000);
+        set_servo_angle(myservo3, 100); //下臂舵机
+        delay(2000);
+        pthread_mutex_lock(&mute_Hand);
+        set_servo_angle(myservo1, 25); //手爪舵机
+        delay(1000);
+        pthread_mutex_unlock(&mute_Hand);
+        delay(100);
+    }
+}
 
-    set_servo_angle(myservo4, 94); //底座舵机
-    delay(1000);
-
-    set_servo_angle(myservo3, 110); //下臂舵机
-    delay(1000);
-
-    set_servo_angle(myservo1, 25); //手爪舵机
-    delay(1000);
+void* fakeOpencv(void*) {
+    while (1) {
+        pthread_mutex_lock(&mute_Hand);
+        printf("wait\n");
+        delay(5000);
+        pthread_mutex_unlock(&mute_Hand);
+        delay(200);
+    }
 }
